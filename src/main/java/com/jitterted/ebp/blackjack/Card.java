@@ -17,7 +17,20 @@ public class Card {
     return rank.rankValue();
   }
 
+  //Long method code smell #1: moved the card color logic and card lines pieces into separate methods
   public String display() {
+    return ansi()
+        .fg(getCardColor()).toString()
+        + String.join(ansi().cursorDown(1)
+                            .cursorLeft(11)
+                            .toString(), getCardDetailsToDisplay());
+  }
+
+  private Ansi.Color getCardColor() {
+    return suit.isRed() ? Ansi.Color.RED : Ansi.Color.BLACK;
+  }
+
+  private String[] getCardDetailsToDisplay() {
     String[] lines = new String[7];
     lines[0] = "┌─────────┐";
     lines[1] = String.format("│%s%s       │", rank.display(), rank.display().equals("10") ? "" : " ");
@@ -26,13 +39,7 @@ public class Card {
     lines[4] = "│         │";
     lines[5] = String.format("│       %s%s│", rank.display().equals("10") ? "" : " ", rank.display());
     lines[6] = "└─────────┘";
-
-    Ansi.Color cardColor = suit.isRed() ? Ansi.Color.RED : Ansi.Color.BLACK;
-    return ansi()
-        .fg(cardColor).toString()
-        + String.join(ansi().cursorDown(1)
-                            .cursorLeft(11)
-                            .toString(), lines);
+    return lines;
   }
 
   @Override

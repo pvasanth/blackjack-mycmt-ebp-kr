@@ -12,8 +12,8 @@ public class Game {
 
   private Hand dealerHand = new Hand();
   private Hand playerHand = new Hand();
-  private int playerBalance = 0;
-  private int playerBet = 0;
+  private int playerBalance = 0;//primitive Obsession (the balance amount cannot be negative)
+  private int playerBet = 0;//primitive Obsession (the bet amount cannot be 0 or negative)
 
   public static void main(String[] args) {
     displayWelcomeScreen();
@@ -31,6 +31,8 @@ public class Game {
                            .fgBlack().a(" BlackJack"));
   }
 
+  //Long method code smell
+  //Extracted the portion where input is sought into its own method
   private static void playGame() {
     Game game = new Game();
 
@@ -38,10 +40,20 @@ public class Game {
     do {
       game.initialDeal();
       game.play();
-      System.out.println("Play again? (y/n):");
-      Scanner scanner = new Scanner(System.in);
-      input = scanner.nextLine();
-    } while (input.equalsIgnoreCase("y"));
+      input = askPlayerIfTheyWantToPlayAgain();
+    } while (playerSaysYes(input));
+  }
+
+  private static boolean playerSaysYes(String input) {
+    return input.equalsIgnoreCase("y");
+  }
+
+  private static String askPlayerIfTheyWantToPlayAgain() {
+    String input;
+    System.out.println("Play again? (y/n):");
+    Scanner scanner = new Scanner(System.in);
+    input = scanner.nextLine();
+    return input;
   }
 
   private static void resetScreen() {
@@ -67,31 +79,19 @@ public class Game {
     drawCardIntoPlayerHand();
     drawCardIntoDealerHand();
   }
-
+  //Feature Envy: This can potentially go into either the Deck class taking in the hand to be dealt to, or in to a Player class with
+  //the player's hand.
   private void drawCardIntoDealerHand() {
     dealerHand.add(deck.draw());
   }
 
-  private void drawCardIntoPlayerHand() {
-    playerHand.add(deck.draw());
-  }
+  private void drawCardIntoPlayerHand() { playerHand.add(deck.draw()); }
 
+  //Long method code smell. Extracted the player play portions into its own method.
   public void play() {
     // get Player's decision: hit until they stand, then they're done (or they go bust)
-    boolean playerBusted = false;
-    while (!playerBusted) {
-      displayGameState();
-      String playerChoice = inputFromPlayer().toLowerCase();
-      if (playerChoice.startsWith("s")) {
-        break;
-      }
-      if (playerChoice.startsWith("h")) {
-        drawCardIntoPlayerHand();
-        playerBusted = playerHand.isBusted();
-      } else {
-        System.out.println("You need to [H]it or [S]tand");
-      }
-    }
+    // Potential Feature Envy, when we move to having a Player Class
+    boolean playerBusted = playerPlays();
 
     // Dealer makes its choice automatically based on a simple heuristic (<=16, hit, 17>stand)
     if (!playerBusted) {
@@ -101,6 +101,32 @@ public class Game {
     displayFinalGameState();
 
     handleGameOutcome();
+  }
+
+  private boolean playerPlays() {
+    boolean playerBusted = false;
+    while (!playerBusted) {
+      displayGameState();
+      String playerChoice = inputFromPlayerInLowerCase();
+      if (playerStands(playerChoice)) {
+        break;
+      }
+      if (playerHits(playerChoice)) {
+        drawCardIntoPlayerHand();
+        playerBusted = playerHand.isBusted();
+      } else {
+        System.out.println("You need to [H]it or [S]tand");
+      }
+    }
+    return playerBusted;
+  }
+
+  private boolean playerHits(String playerChoice) {
+    return playerChoice.startsWith("h");
+  }
+
+  private boolean playerStands(String playerChoice) {
+    return playerChoice.startsWith("s");
   }
 
   private void dealerPlays() {
@@ -123,10 +149,10 @@ public class Game {
     }
   }
 
-  private String inputFromPlayer() {
+  private String inputFromPlayerInLowerCase() {
     System.out.println("[H]it or [S]tand?");
     Scanner scanner = new Scanner(System.in);
-    return scanner.nextLine();
+    return scanner.nextLine().toLowerCase();
   }
 
   private void displayGameState() {

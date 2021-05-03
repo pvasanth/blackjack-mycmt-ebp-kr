@@ -1,28 +1,16 @@
 package com.jitterted.ebp.blackjack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class Deck {
   private final List<Card> cards = new ArrayList<>();
+  private final List<String> cardValues = new ArrayList<String>(Arrays.asList("A","2","3","4","5","6","7","8","9","10","J","Q","K"));
 
+  //Long method code smell, even though the card values were needed to be enumerated by this Black Jack Deck, we need for it to be
   public Deck() {
-    List<String> cardValues = new ArrayList<>();
-    cardValues.add("A");
-    cardValues.add("2");
-    cardValues.add("3");
-    cardValues.add("4");
-    cardValues.add("5");
-    cardValues.add("6");
-    cardValues.add("7");
-    cardValues.add("8");
-    cardValues.add("9");
-    cardValues.add("10");
-    cardValues.add("J");
-    cardValues.add("Q");
-    cardValues.add("K");
-
     for (Suit suit : Suit.values()) {
       for (String cardValue : cardValues) {
         cards.add(new Card(suit, cardValue));
