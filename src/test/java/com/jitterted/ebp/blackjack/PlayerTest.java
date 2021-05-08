@@ -66,4 +66,16 @@ public class PlayerTest {
         player.placesBet(100);
         assertThat(player.playerBalance()).isEqualTo(0);
     }
+
+    @Test
+    public void verifyPlayerTotalBetAmount() throws Exception {
+        Player player = new Player();
+        player.deposit(100);
+        player.placesBet(40);
+        assertThat(player.totalBetAmount())
+                .isEqualTo(40);
+        player.placesBet(50);
+        assertThat(player.totalBetAmount())
+                .isEqualTo(90);
+    }
 }
