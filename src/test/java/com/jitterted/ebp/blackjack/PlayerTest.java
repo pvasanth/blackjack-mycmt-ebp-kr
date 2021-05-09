@@ -78,4 +78,61 @@ public class PlayerTest {
         assertThat(player.totalBetAmount())
                 .isEqualTo(90);
     }
+
+    @Test
+    public void verifyPlayerBalanceWith100PlusBetWins() throws Exception {
+        Player player = new Player();
+        player.deposit(200);
+        player.placesBet(40);
+        player.playerWins();
+        assertThat(player.totalBetAmount())
+                .isEqualTo(40);
+        assertThat(player.playerBalance())
+                .isEqualTo(240);//No bonus
+        //2nd round
+        player.placesBet(100);
+        player.playerWins();
+        assertThat(player.totalBetAmount())
+                .isEqualTo(140);
+        assertThat(player.playerBalance())
+                .isEqualTo(350);//bonus
+    }
+
+    @Test
+    public void verifyPlayerBalanceWith100PlusBetLoses() throws Exception {
+        Player player = new Player();
+        player.deposit(200);
+        player.placesBet(40);
+        player.playerLoses();
+        assertThat(player.totalBetAmount())
+                .isEqualTo(40);
+        assertThat(player.playerBalance())
+                .isEqualTo(160);//No bonus
+        //2nd round
+        player.placesBet(100);
+        player.playerLoses();
+        assertThat(player.totalBetAmount())
+                .isEqualTo(140);
+        assertThat(player.playerBalance())
+                .isEqualTo(70);//bonus
+    }
+    @Test
+    public void verifyPlayerBalanceWith100PlusBetTies() throws Exception {
+        Player player = new Player();
+        player.deposit(200);
+        player.placesBet(40);
+        player.playerTies();
+        assertThat(player.totalBetAmount())
+                .isEqualTo(40);
+        assertThat(player.playerBalance())
+                .isEqualTo(200);//No bonus
+        //2nd round
+        player.placesBet(100);
+        player.playerTies();
+        assertThat(player.totalBetAmount())
+                .isEqualTo(140);
+        assertThat(player.playerBalance())
+                .isEqualTo(210);//bonus
+    }
+
 }

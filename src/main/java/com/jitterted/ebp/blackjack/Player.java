@@ -27,7 +27,7 @@ public class Player {
     }
 
     public void playerWins() {
-      this.playerBalance += getBet() * 2;
+      this.playerBalance += (getBet() * 2) + getBonus();
     }
 
     private int getBet() {
@@ -35,11 +35,15 @@ public class Player {
     }
 
     public void playerLoses() {
-        this.playerBalance += getBet() * 0;
+        this.playerBalance += (getBet() * 0) + getBonus();
+    }
+
+    private int getBonus() {
+        return getBet() >=100 ? 10 : 0;
     }
 
     public void playerTies() {
-        this.playerBalance += getBet() * 1;
+        this.playerBalance += getBet() * 1 + getBonus();
     }
 
     public void deposit(int amount) {
